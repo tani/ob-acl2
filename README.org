@@ -1,8 +1,6 @@
 #+TITLE: ob-acl2
 #+AUTHOR: TANIGUCHI Masaya
 
-* Description
-
 This is a library for org-babel to execute ACL2 code.
 
 * Installation
@@ -30,8 +28,8 @@ First, write lisp function in org-mode and evaluate it (=C-c C-c=).
 #+BEGIN_SRC acl2 :results output
   (defun factorial (n)
     (if (zp n)
-	1
-	(* n (factorial (1- n)))))
+        1
+        (* n (factorial (1- n)))))
 #+END_SRC
 
 #+RESULTS:
@@ -60,8 +58,8 @@ Write a theorem and evaluate it.
 #+BEGIN_SRC acl2 :results output
   (defthm factorial-positive
     (implies (and (integerp n) (<= 0 n))
-	     (and (integerp (factorial n))
-		  (< 0 (factorial n)))))
+             (and (integerp (factorial n))
+                  (< 0 (factorial n)))))
 #+END_SRC
 
 #+RESULTS:
@@ -86,6 +84,10 @@ Now, you have a safe and sound factorial function in ACL2.
 
 * License
 
-Copyright (C) 2021 TANIGUCHI Masaya
+Copyright (C) 2022 TANIGUCHI Masaya
 
 This program is licensed under the GNU General Public License version 3.
+
+* Related works
+
+- [[https://github.com/tani/acl2-kernel]] - A jupyter kernel for ACL2
