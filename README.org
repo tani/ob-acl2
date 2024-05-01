@@ -18,6 +18,9 @@ But you can install it from GitHub as follows:
   (add-hook 'org-mode-hook 'ob-acl2-setup))
 #+END_SRC
 
+#+RESULTS:
+: ob-acl2
+
 * Usage
 
 You can execute ACL2 code in org-mode as follows:
@@ -34,19 +37,14 @@ First, write lisp function in org-mode and evaluate it (=C-c C-c=).
 #+RESULTS:
 #+begin_example
 
-The admission of FACTORIAL is trivial, using the relation O< (which
-is known to be well-founded on the domain recognized by O-P) and the
-measure (ACL2-COUNT N).  We observe that the type of FACTORIAL is described
-by the theorem (AND (INTEGERP (FACTORIAL N)) (< 0 (FACTORIAL N))).
-We used the :compound-recognizer rule ZP-COMPOUND-RECOGNIZER and primitive
-type reasoning.
+The event ( DEFUN FACTORIAL ...) is redundant.  See :DOC redundant-
+events.
 
 Summary
 Form:  ( DEFUN FACTORIAL ...)
-Rules: ((:COMPOUND-RECOGNIZER ZP-COMPOUND-RECOGNIZER)
-        (:FAKE-RUNE-FOR-TYPE-SET NIL))
-Time:  0.01 seconds (prove: 0.00, print: 0.00, other: 0.01)
- FACTORIAL
+Rules: NIL
+Time:  0.00 seconds (prove: 0.00, print: 0.00, other: 0.00)
+ :REDUNDANT
 
 #+end_example
 
@@ -64,17 +62,14 @@ Write a theorem and evaluate it.
 #+RESULTS:
 #+begin_example
 
-Q.E.D.
-
-The storage of FACTORIAL-POSITIVE depends upon primitive type reasoning
-and the :type-prescription rule FACTORIAL.
+The event ( DEFTHM FACTORIAL-POSITIVE ...) is redundant.  See :DOC
+redundant-events.
 
 Summary
 Form:  ( DEFTHM FACTORIAL-POSITIVE ...)
-Rules: ((:FAKE-RUNE-FOR-TYPE-SET NIL)
-        (:TYPE-PRESCRIPTION FACTORIAL))
+Rules: NIL
 Time:  0.00 seconds (prove: 0.00, print: 0.00, other: 0.00)
- FACTORIAL-POSITIVE
+ :REDUNDANT
 
 #+end_example
 
