@@ -1,11 +1,11 @@
 #+TITLE: ob-acl2
 #+AUTHOR: TANIGUCHI Masaya
 
-* ob-acl2
+* Description
 
 This is a library for org-babel to execute ACL2 code.
 
-** Installation
+* Installation
 
 This package is not yet available on MELPA.
 But you can install it from GitHub as follows:
@@ -21,11 +21,11 @@ But you can install it from GitHub as follows:
      '((acl2 . t))))
 #+END_SRC
 
-** Usage
+* Usage
 
 You can execute ACL2 code in org-mode as follows:
 
-First, write lisp function in org-mode and evaluate it (=C-c C=c=).
+First, write lisp function in org-mode and evaluate it (=C-c C-c=).
 
 #+BEGIN_SRC acl2 :results output
   (defun factorial (n)
@@ -84,7 +84,7 @@ Time:  0.00 seconds (prove: 0.00, print: 0.00, other: 0.00)
 The theorem FACTORIAL-POSITIVE is proved.
 Now, you have a safe and sound factorial function in ACL2.
 
-** License
+* License
 
 Copyright (C) 2021 TANIGUCHI Masaya
 
