@@ -1,0 +1,91 @@
+#+TITLE: ob-acl2
+#+AUTHOR: TANIGUCHI Masaya
+
+* ob-acl2
+
+This is a library for org-babel to execute ACL2 code.
+
+** Installation
+
+This package is not yet available on MELPA.
+But you can install it from GitHub as follows:
+
+#+BEGIN_SRC emacs-lisp
+  (leaf ob-acl2
+    :vc (:url "https://github.com/tani/ob-acl2"))
+  (leaf org
+    :ensure t
+    :config
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((acl2 . t))))
+#+END_SRC
+
+** Usage
+
+You can execute ACL2 code in org-mode as follows:
+
+First, write lisp function in org-mode and evaluate it (=C-c C=c=).
+
+#+BEGIN_SRC acl2 :results output
+  (defun factorial (n)
+    (if (zp n)
+	1
+	(* n (factorial (1- n)))))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+The admission of FACTORIAL is trivial, using the relation O< (which
+is known to be well-founded on the domain recognized by O-P) and the
+measure (ACL2-COUNT N).  We observe that the type of FACTORIAL is described
+by the theorem (AND (INTEGERP (FACTORIAL N)) (< 0 (FACTORIAL N))).
+We used the :compound-recognizer rule ZP-COMPOUND-RECOGNIZER and primitive
+type reasoning.
+
+Summary
+Form:  ( DEFUN FACTORIAL ...)
+Rules: ((:COMPOUND-RECOGNIZER ZP-COMPOUND-RECOGNIZER)
+        (:FAKE-RUNE-FOR-TYPE-SET NIL))
+Time:  0.01 seconds (prove: 0.00, print: 0.00, other: 0.01)
+ FACTORIAL
+
+#+end_example
+
+Yaay! The function FACTORIAL is defined.
+Let's prove that the factorial of a positive integer is positive.
+Write a theorem and evaluate it.
+
+#+BEGIN_SRC acl2 :results output
+  (defthm factorial-positive
+    (implies (and (integerp n) (<= 0 n))
+	     (and (integerp (factorial n))
+		  (< 0 (factorial n)))))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+Q.E.D.
+
+The storage of FACTORIAL-POSITIVE depends upon primitive type reasoning
+and the :type-prescription rule FACTORIAL.
+
+Summary
+Form:  ( DEFTHM FACTORIAL-POSITIVE ...)
+Rules: ((:FAKE-RUNE-FOR-TYPE-SET NIL)
+        (:TYPE-PRESCRIPTION FACTORIAL))
+Time:  0.00 seconds (prove: 0.00, print: 0.00, other: 0.00)
+ FACTORIAL-POSITIVE
+
+#+end_example
+
+The theorem FACTORIAL-POSITIVE is proved.
+Now, you have a safe and sound factorial function in ACL2.
+
+** License
+
+Copyright (C) 2021 TANIGUCHI Masaya
+
+This program is licensed under the GNU General Public License version 3.
