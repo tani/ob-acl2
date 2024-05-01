@@ -27,7 +27,6 @@
 
 (require 'cl-lib)
 (require 'org)
-(require 'ob)
 (require 'ob-comint)
 
 
@@ -43,63 +42,33 @@
   :type 'string)
 
 
-(defvar org-babel-acl2-eoe-indicator "\"ACL2-EOE\""
+(defvar ob-acl2-eoe-indicator "\"ACL2-EOE\""
   "String that signals the end of an ACL2 evaluation.")
 
 
 ;;;###autoload
 (defun org-babel-execute:acl2 (body params)
-  "Execute a block of ACL2 code with org-babel."
-  (message "executing ACL2 source code block")  
-  (let* ((processed-params (org-babel-process-params params))
-	 (session (org-babel-acl2-initiate-session (cdr (assoc :session processed-params))))
-	 (full-body (org-babel-expand-body:acl2 body params))	 
+  "Execute BODY with PARAMS in ACL2."
+  (message "executing ACL2 source code block")
+  (let* ((session (or (get-buffer "*inferior-lisp*")
+		      (save-window-excursion
+			(run-lisp ob-acl2-program)
+			(sleep-for .5)
+			(current-buffer))))
+	 (valuep (eq 'value (cdr (assoc :result-type params))))
+	 (wrapped-body (if valuep (format "(format nil \"~a~n\" %s)" body) body))
+	 (full-body (org-babel-expand-body:emacs-lisp wrapped-body params))
 	 (lines
-	  (org-babel-comint-with-output (session org-babel-acl2-eoe-indicator)
-	    (setq comint-prompt-regexp "^ACL2 !> *")
-	    (insert (org-trim full-body))
+	  (org-babel-comint-with-output (session ob-acl2-eoe-indicator)
+	    (setq-local comint-prompt-regexp "^ACL2 !> *")
+	    (insert full-body)
 	    (comint-send-input nil t)
-	    (insert org-babel-acl2-eoe-indicator)
+	    (insert ob-acl2-eoe-indicator)
 	    (comint-send-input nil t))))
     (cl-loop for line in lines
-	     for trimmed = (substring line 0 (string-match org-babel-acl2-eoe-indicator line))
+	     for trimmed = (substring line 0 (string-match ob-acl2-eoe-indicator line))
 	     collect trimmed into results
 	     finally return (mapconcat 'identity results "\n"))))
-
-
-;;;###autoload
-(defun org-babel-expand-body:acl2 (body params)
-  "Expand BODY according to RESULT-TYPE."
-  (org-babel-expand-body:emacs-lisp
-   (if (eq 'value (cdr (assoc :result-type params)))
-       (format "((lambda () %s))" body)
-     body)
-   params))
-
-
-;;; Helper functions
-
-
-(defun org-babel-acl2-initiate-session (&optional session)
-  "If there is not a current inferior-process-buffer in SESSION then create one."
-  (or (get-buffer "*inferior-lisp*")
-      (save-window-excursion
-	(run-lisp ob-acl2-program)
-	(sleep-for .5)
-	(current-buffer))))
-
-
-(defun org-babel-acl2-evaluate (session body)
-  "Evaluate BODY in SESSION."
-  (org-babel-comint-with-output (session org-babel-acl2-eoe-indicator body)
-    (mapc
-     (lambda (line)
-       (insert (org-babel-chomp line))
-       (comint-send-string nil t)
-       (comint-send-string nil "\n"))
-     (list (org-trim body) org-babel-acl2-eoe-indicator))
-    (insert body)
-    (comint-send-string nil "\n")))
 
 
 (provide 'ob-acl2)
