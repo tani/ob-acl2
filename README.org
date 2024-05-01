@@ -9,14 +9,13 @@ This package is not yet available on MELPA.
 But you can install it from GitHub as follows:
 
 #+BEGIN_SRC emacs-lisp
-  (leaf ob-acl2
-    :vc (:url "https://github.com/tani/ob-acl2"))
-  (leaf org
-    :ensure t
-    :config
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((acl2 . t))))
+(leaf ob-acl2
+  :vc (:url "https://github.com/tani/ob-acl2")
+  :config
+  (defun ob-acl2-setup ()
+    (add-to-list 'org-babel-load-languages '(acl2 . t))
+    (add-to-list 'org-src-lang-modes '("acl2" . lisp)))
+  (add-hook 'org-mode-hook 'ob-acl2-setup))
 #+END_SRC
 
 * Usage
