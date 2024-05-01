@@ -102,9 +102,5 @@
     (comint-send-string nil "\n")))
 
 
-(eval-after-load 'org
-  '(add-to-list 'org-src-lang-modes '("acl2" . lisp)))
-
-
 (provide 'ob-acl2)
 ;;; ob-acl2.el ends here
