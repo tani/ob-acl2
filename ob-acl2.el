@@ -77,8 +77,9 @@
    params))
 
 
+;;; Helper functions
 
-;;;###autoload
+
 (defun org-babel-acl2-initiate-session (&optional session)
   "If there is not a current inferior-process-buffer in SESSION then create one."
   (or (get-buffer "*inferior-lisp*")
@@ -88,7 +89,6 @@
 	(current-buffer))))
 
 
-;;;###autoload
 (defun org-babel-acl2-evaluate (session body)
   "Evaluate BODY in SESSION."
   (org-babel-comint-with-output (session org-babel-acl2-eoe-indicator body)
@@ -102,7 +102,6 @@
     (comint-send-string nil "\n")))
 
 
-;;;###autoload
 (eval-after-load 'org
   '(add-to-list 'org-src-lang-modes '("acl2" . lisp)))
 
