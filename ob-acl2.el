@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'subr-x)
 (require 'org)
 (require 'ob-comint)
 
@@ -50,14 +51,15 @@
 (defun org-babel-execute:acl2 (body params)
   "Execute BODY with PARAMS in ACL2."
   (message "executing ACL2 source code block")
-  (let* ((session (or (get-buffer "*inferior-lisp*")
-		      (save-window-excursion
-			(run-lisp ob-acl2-program)
-			(sleep-for .5)
-			(current-buffer))))
-	 (valuep (eq 'value (cdr (assoc :result-type params))))
-	 (wrapped-body (if valuep (format "(format nil \"~a~n\" %s)" body) body))
+  (let* ((valuep (eq 'value (cdr (assoc :result-type params))))
+	 (wrapped-body (if valuep (format "((lambda () %s))" body) body))
 	 (full-body (org-babel-expand-body:emacs-lisp wrapped-body params))
+	 (session
+	  (or (get-buffer "*inferior-lisp*")
+	      (save-window-excursion
+		(run-lisp ob-acl2-program)
+		(sleep-for .5)
+		(current-buffer))))
 	 (lines
 	  (org-babel-comint-with-output (session ob-acl2-eoe-indicator)
 	    (setq-local comint-prompt-regexp "^ACL2 !> *")
@@ -68,7 +70,7 @@
     (cl-loop for line in lines
 	     for trimmed = (substring line 0 (string-match ob-acl2-eoe-indicator line))
 	     collect trimmed into results
-	     finally return (mapconcat 'identity results "\n"))))
+	     finally return (string-join results "\n"))))
 
 
 (provide 'ob-acl2)
