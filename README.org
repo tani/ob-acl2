@@ -84,7 +84,7 @@ Now, you have a safe and sound factorial function in ACL2.
 
 * License
 
-Copyright (C) 2022 TANIGUCHI Masaya
+Copyright (C) 2024 TANIGUCHI Masaya
 
 This program is licensed under the GNU General Public License version 3.
 
