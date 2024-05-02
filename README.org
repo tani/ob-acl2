@@ -37,15 +37,19 @@ First, write lisp function in org-mode and evaluate it (=C-c C-c=).
 #+RESULTS:
 #+begin_example
 
-The event ( DEFUN FACTORIAL ...) is redundant.  See :DOC redundant-
-events.
+The admission of FACTORIAL is trivial, using the relation O< (which
+is known to be well-founded on the domain recognized by O-P) and the
+measure (ACL2-COUNT N).  We observe that the type of FACTORIAL is described
+by the theorem (AND (INTEGERP (FACTORIAL N)) (< 0 (FACTORIAL N))).
+We used the :compound-recognizer rule ZP-COMPOUND-RECOGNIZER and primitive
+type reasoning.
 
 Summary
 Form:  ( DEFUN FACTORIAL ...)
-Rules: NIL
+Rules: ((:COMPOUND-RECOGNIZER ZP-COMPOUND-RECOGNIZER)
+        (:FAKE-RUNE-FOR-TYPE-SET NIL))
 Time:  0.00 seconds (prove: 0.00, print: 0.00, other: 0.00)
- :REDUNDANT
-
+ FACTORIAL
 #+end_example
 
 Yaay! The function FACTORIAL is defined.
@@ -62,15 +66,17 @@ Write a theorem and evaluate it.
 #+RESULTS:
 #+begin_example
 
-The event ( DEFTHM FACTORIAL-POSITIVE ...) is redundant.  See :DOC
-redundant-events.
+Q.E.D.
+
+The storage of FACTORIAL-POSITIVE depends upon primitive type reasoning
+and the :type-prescription rule FACTORIAL.
 
 Summary
 Form:  ( DEFTHM FACTORIAL-POSITIVE ...)
-Rules: NIL
+Rules: ((:FAKE-RUNE-FOR-TYPE-SET NIL)
+        (:TYPE-PRESCRIPTION FACTORIAL))
 Time:  0.00 seconds (prove: 0.00, print: 0.00, other: 0.00)
- :REDUNDANT
-
+ FACTORIAL-POSITIVE
 #+end_example
 
 The theorem FACTORIAL-POSITIVE is proved.
