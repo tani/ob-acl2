@@ -51,26 +51,51 @@
 (defun org-babel-execute:acl2 (body params)
   "Execute BODY with PARAMS in ACL2."
   (message "executing ACL2 source code block")
-  (let* ((valuep (eq 'value (cdr (assoc :result-type params))))
-	 (wrapped-body (if valuep (format "((lambda () %s))" body) body))
-	 (full-body (org-babel-expand-body:emacs-lisp wrapped-body params))
-	 (session
-	  (or (get-buffer "*inferior-lisp*")
-	      (save-window-excursion
-		(run-lisp ob-acl2-program)
-		(sleep-for .5)
-		(current-buffer))))
-	 (lines
-	  (org-babel-comint-with-output (session ob-acl2-eoe-indicator)
-	    (setq-local comint-prompt-regexp "^ACL2 !> *")
-	    (insert full-body)
-	    (comint-send-input nil t)
-	    (insert ob-acl2-eoe-indicator)
-	    (comint-send-input nil t))))
-    (cl-loop for line in lines
-	     for trimmed = (substring line 0 (string-match ob-acl2-eoe-indicator line))
-	     collect trimmed into results
-	     finally return (string-join results "\n"))))
+  (let* ((full-body (ob-acl2-expand-body body params))
+	 (session (ob-acl2-initiate-session (alist-get :session params)))
+	 (output-lines (ob-acl2-evaluate-body full-body session)))
+    (ob-acl2-clean-up-output output-lines)))
+
+
+;;; Helper functions
+
+
+(defun ob-acl2-clean-up-output (output-lines)
+  "Clean up OUTPUT-LINES by removing the ACL2-EOE indicator."
+  (cl-loop for line in output-lines
+	   until (string-match-p ob-acl2-eoe-indicator line)
+	   collect line into cleaned-lines
+	   finally return (string-join cleaned-lines "\n")))
+
+
+(defun ob-acl2-evaluate-body (full-body session)
+  "Evaluate FULL-BODY in SESSION."
+  (org-babel-comint-with-output (session ob-acl2-eoe-indicator)
+    (setq-local comint-prompt-regexp "^ACL2 !> *")
+    (insert full-body)
+    (comint-send-input nil t)
+    (insert ob-acl2-eoe-indicator)
+    (comint-send-input nil t)))
+
+
+(defun ob-acl2-expand-body (body params)
+  "Expand BODY with PARAMS as the same as an emacs-lisp source code block."
+  (org-babel-expand-body:emacs-lisp
+   (if (eq 'value (alist-get :result-params params))
+       (format "((lambda () %s))" body)
+     body)
+   params))
+
+
+(defun ob-acl2-initiate-session (session)
+  "Initiate an ACL2 session named SESSION."
+  (let ((session-name (format "*inferior-lisp<ob-acl2:%s>*" session)))
+    (or (get-buffer session-name)
+	(save-window-excursion
+	  (run-lisp ob-acl2-program)
+	  (rename-buffer session-name)
+	  (sit-for .25)
+	  (current-buffer)))))
 
 
 (provide 'ob-acl2)
