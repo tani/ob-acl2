@@ -81,7 +81,7 @@
 (defun ob-acl2-expand-body (body params)
   "Expand BODY with PARAMS as the same as an emacs-lisp source code block."
   (org-babel-expand-body:emacs-lisp
-   (if (eq 'value (alist-get :result-params params))
+   (if (eq 'value (alist-get :result-type params))
        (format "((lambda () %s))" body)
      body)
    params))
