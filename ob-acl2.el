@@ -89,13 +89,15 @@
 
 (defun ob-acl2-initiate-session (session)
   "Initiate an ACL2 session named SESSION."
-  (let ((session-name (format "*inferior-lisp<ob-acl2:%s>*" session)))
-    (or (get-buffer session-name)
-	(save-window-excursion
-	  (run-lisp ob-acl2-program)
-	  (rename-buffer session-name)
-	  (sit-for .25)
-	  (current-buffer)))))
+  (let* ((session-name (format "*inferior-lisp<ob-acl2:%s>*" session))	 
+	 (buffer (get-buffer session-name)))
+    (unless buffer
+      (save-window-excursion
+	(run-lisp ob-acl2-program)
+	(rename-buffer session-name)
+	(setq buffer (current-buffer))
+	(ob-acl2-evaluate-body "\"ACL2-INIT\"" buffer)))
+    buffer))
 
 
 (provide 'ob-acl2)
