@@ -25,6 +25,7 @@
 ;;; 
 ;;; Code:
 
+
 (require 'cl-lib)
 (require 'subr-x)
 (require 'org)
@@ -51,10 +52,20 @@
 (defun org-babel-execute:acl2 (body params)
   "Execute BODY with PARAMS in ACL2."
   (message "executing ACL2 source code block")
-  (let* ((full-body (ob-acl2-expand-body body params))
+  (let* ((full-body (org-babel-expand-body:acl2 body params))
 	 (session (ob-acl2-initiate-session (alist-get :session params)))
 	 (output-lines (ob-acl2-evaluate-body full-body session)))
     (ob-acl2-clean-up-output output-lines)))
+
+
+;;;###autoload
+(defun org-babel-expand-body:acl2 (body params)
+  "Expand BODY with PARAMS as the same as an emacs-lisp source code block."
+  (org-babel-expand-body:emacs-lisp
+   (if (eq 'value (alist-get :result-type params))
+       (format "((lambda () %s))" body)
+     body)
+   params))
 
 
 ;;; Helper functions
@@ -78,18 +89,9 @@
     (comint-send-input nil t)))
 
 
-(defun ob-acl2-expand-body (body params)
-  "Expand BODY with PARAMS as the same as an emacs-lisp source code block."
-  (org-babel-expand-body:emacs-lisp
-   (if (eq 'value (alist-get :result-type params))
-       (format "((lambda () %s))" body)
-     body)
-   params))
-
-
 (defun ob-acl2-initiate-session (session)
   "Initiate an ACL2 session named SESSION."
-  (let* ((session-name (format "*inferior-lisp<ob-acl2:%s>*" session))	 
+  (let* ((session-name (format "*inferior-lisp<ob-acl2:%s>*" session))
 	 (buffer (get-buffer session-name)))
     (unless buffer
       (save-window-excursion
