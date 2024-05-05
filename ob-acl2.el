@@ -25,28 +25,23 @@
 ;;; 
 ;;; Code:
 
-
 (require 'cl-lib)
 (require 'subr-x)
 (require 'org)
 (require 'ob-comint)
-
 
 (defgroup ob-acl2 nil
   "Customization group for `ob-acl2'."
   :group 'org-babel
   :prefix 'ob-acl2)
 
-
 (defcustom ob-acl2-program "acl2"
   "The ACL2 program to use."
   :group 'ob-acl2
   :type 'string)
 
-
 (defvar ob-acl2-eoe-indicator "\"ACL2-EOE\""
   "String that signals the end of an ACL2 evaluation.")
-
 
 ;;;###autoload
 (defun org-babel-execute:acl2 (body params)
@@ -57,7 +52,6 @@
 	 (output-lines (ob-acl2-evaluate-body full-body session)))
     (ob-acl2-clean-up-output output-lines)))
 
-
 ;;;###autoload
 (defun org-babel-expand-body:acl2 (body params)
   "Expand BODY with PARAMS as the same as an emacs-lisp source code block."
@@ -67,9 +61,7 @@
      body)
    params))
 
-
 ;;; Helper functions
-
 
 (defun ob-acl2-clean-up-output (output-lines)
   "Clean up OUTPUT-LINES by removing the ACL2-EOE indicator."
@@ -77,7 +69,6 @@
 	   until (string-match-p ob-acl2-eoe-indicator line)
 	   collect line into cleaned-lines
 	   finally return (string-join cleaned-lines "\n")))
-
 
 (defun ob-acl2-evaluate-body (full-body session)
   "Evaluate FULL-BODY in SESSION."
@@ -87,7 +78,6 @@
     (comint-send-input nil t)
     (insert ob-acl2-eoe-indicator)
     (comint-send-input nil t)))
-
 
 (defun ob-acl2-initiate-session (session)
   "Initiate an ACL2 session named SESSION."
@@ -100,7 +90,6 @@
 	(setq buffer (current-buffer))
 	(ob-acl2-evaluate-body "\"ACL2-INIT\"" buffer)))
     buffer))
-
 
 (provide 'ob-acl2)
 ;;; ob-acl2.el ends here
